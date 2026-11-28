@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import AppButton from './AppButton';
+import AppButton from '../appButton/AppButton';
 import styles from './Style';
 
 export default function PoliticasModal({ visible, onClose, onAceitar }) {
