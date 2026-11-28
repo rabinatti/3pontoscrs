@@ -12,20 +12,27 @@ import AppButton from '../../components/appButton/AppButton';
 import PoliticasModal from '../../components/politicasModal/PoliticasModal';
 import styles from './Style';
 
+import { obterUsuarioLogado, logoutUsuario } from '../../services/authService';
+
 export default function PerfilScreen({ navigation }) {
-  const [modalPoliticas, setModalPoliticas] = useState(false);
+    const [usuario, setUsuario] = useState({ nomeUsuario: 'Usuário', emailUsuario: '' });
+    const [modalPoliticas, setModalPoliticas] = useState(false);
 
-  // Quando o login estiver conectado ao banco, preencha com os dados reais da sessão (Usuario)
-  const usuarioLogado = {
-    nomeUsuario: 'Usuário',
-    emailUsuario: 'usuario@email.com',
-  };
+    React.useEffect(() => {
+    obterUsuarioLogado().then((u) => {
+        if (u) setUsuario(u);
+    });
+    }, []);
 
+async function handleSair() {
+  await logoutUsuario();
+  navigation.replace('Inicial');
+}
   return (
     <SafeAreaView style={styles.container}>
       <HeaderApp
-        nomeUsuario={usuarioLogado.nomeUsuario}
-        onSair={() => navigation.replace('Inicial')}
+        nomeUsuario={usuario.nomeUsuario}
+        onSair={handleSair}
       />
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -33,13 +40,13 @@ export default function PerfilScreen({ navigation }) {
         <View style={styles.cartaoUsuario}>
           <View style={styles.avatarGrande}>
             <Text style={styles.avatarTexto}>
-              {usuarioLogado.nomeUsuario.charAt(0).toUpperCase()}
+              {usuario.nomeUsuario.charAt(0).toUpperCase()}
             </Text>
           </View>
 
           <View style={styles.infoUsuario}>
-            <Text style={styles.nome}>{usuarioLogado.nomeUsuario}</Text>
-            <Text style={styles.email}>{usuarioLogado.emailUsuario}</Text>
+            <Text style={styles.nome}>{usuario.nomeUsuario}</Text>
+            <Text style={styles.email}>{usuario.emailUsuario}</Text>
 
             <View style={styles.seloVerificado}>
               <Ionicons name="shield-checkmark" size={14} color="#FFFFFF" />

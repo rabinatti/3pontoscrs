@@ -10,6 +10,9 @@ import { Ionicons } from '@expo/vector-icons';
 import HeaderApp from '../../components/headerApp/HeaderApp';
 import styles from './Style';
 
+import { obterUsuarioLogado } from '../../services/authService';
+import { listarPedidosPorUsuario } from '../../services/pedidoService';
+
 export default function MeusPedidosScreen({ navigation }) {
   const [pedidos, setPedidos] = useState([]);
   const [carregando, setCarregando] = useState(false);
@@ -21,19 +24,11 @@ export default function MeusPedidosScreen({ navigation }) {
   async function carregarPedidos() {
     setCarregando(true);
     try {
-      // Estrutura esperada do SELECT na tabela Pedido (UML):
-      // [
-      //   {
-      //     idPedido: 2481,
-      //     idUsuario: 1,
-      //     idPrestador: 2,
-      //     nomeFantasiaPrestador: 'Elétrica Prime Predial', // vindo do JOIN com Prestador
-      //     dataInicioPedido: '2026-05-14',
-      //     dataFinalizacaoPedido: '2026-05-14',
-      //     statusPedido: 'Concluída',
-      //   }
-      // ]
-      setPedidos([]);
+        const usuario = await obterUsuarioLogado();
+        if (usuario?.idUsuario) {
+        const dados = await listarPedidosPorUsuario(usuario.idUsuario);
+        setPedidos(dados || []);
+}
     } catch (erro) {
       console.error('Erro ao buscar pedidos:', erro);
     } finally {

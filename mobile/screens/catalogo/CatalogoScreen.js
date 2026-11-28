@@ -13,6 +13,10 @@ import HeaderApp from '../../components/headerApp/HeaderApp';
 import AppButton from '../../components/appButton/AppButton';
 import styles from './Style';
 
+import { useFocusEffect } from '@react-navigation/native';
+
+import { listarPrestadores } from '../../services/prestadorService';
+
 const CATEGORIAS = ['Todas', 'Elétrica', 'Hidráulica', 'Pintura', 'Ar-condicionado'];
 
 export default function CatalogoScreen({ navigation }) {
@@ -22,24 +26,23 @@ export default function CatalogoScreen({ navigation }) {
   const [carregando, setCarregando] = useState(false);
 
   // Preparado para buscar os dados reais da tabela Prestador no back-end
-  useEffect(() => {
-    carregarPrestadores();
-  }, [categoriaAtiva, busca]);
+    useFocusEffect(
+    React.useCallback(() => {
+        carregarPrestadores();
+    }, [])
+    );
 
-  async function carregarPrestadores() {
-    setCarregando(true);
-    try {
-      // Quando o back-end estiver rodando, substitua pelo fetch:
-      // const res = await fetch(`http://10.0.2.2:3000/api/prestadores?categoria=${categoriaAtiva}&busca=${busca}`);
-      // const dados = await res.json();
-      // setPrestadores(dados);
-      setPrestadores([]);
-    } catch (erro) {
-      console.error('Erro ao carregar prestadores:', erro);
-    } finally {
-      setCarregando(false);
+    async function carregarPrestadores() {
+        setCarregando(true);
+        try {
+            const dados = await listarPrestadores(categoriaAtiva, busca);
+            setPrestadores(dados || []);
+        } catch (erro) {
+        console.error('Erro ao carregar prestadores:', erro);
+        } finally {
+        setCarregando(false);
+        }
     }
-  }
 
   return (
     <SafeAreaView style={styles.container}>

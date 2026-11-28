@@ -6,6 +6,8 @@ import AppButton from '../../components/appButton/AppButton';
 import PoliticasModal from '../../components/politicasModal/PoliticasModal';
 import styles from './Style';
 
+import { cadastrarUsuario } from '../../services/authService';
+
 export default function CadastroScreen({ navigation }) {
   const [etapa, setEtapa] = useState(1);
   const [erros, setErros] = useState({});
@@ -67,31 +69,30 @@ export default function CadastroScreen({ navigation }) {
     setEtapa(etapa + 1);
   }
 
-  function finalizarCadastro() {
+  async function finalizarCadastro() {
     if (!validarEtapaAtual()) return;
 
-    const [dia, mes, ano] = nascimento.split('/');
+    try {
+        await cadastrarUsuario({
+        nome,
+        cpf,
+        nascimento,
+        cep,
+        endereco,
+        numero,
+        bairro,
+        cidade,
+        celular,
+        email,
+        senha,
+    });
 
-    // Objeto parametrizado idêntico aos atributos da classe Usuario (UML)
-    const usuarioPrepared = {
-      nomeUsuario: nome.trim(),
-      senhaUsuario: senha,
-      cpfUsuario: cpf.replace(/\D/g, ''),
-      nascimentoUsuario: `${ano}-${mes}-${dia}`,
-      emailUsuario: email.trim().toLowerCase(),
-      celularUsuario: celular.replace(/\D/g, ''),
-      cepUsuario: cep.replace(/\D/g, ''),
-      logradouroUsuario: endereco.trim(),
-      numeroCasaUsuario: numero.trim(),
-      bairroUsuario: bairro.trim(),
-      cidadeUsuario: cidade.trim(),
-      ativoUsuario: true,
-    };
-
-    console.log('Dados prontos para INSERT no back-end:', usuarioPrepared);
     Alert.alert('Cadastro concluído!', 'Sua conta foi criada com sucesso.', [
       { text: 'Ir para Login', onPress: () => navigation.replace('Login') },
     ]);
+    } catch (erro) {
+        Alert.alert('Erro no cadastro', erro.message);
+    }
   }
 
   return (
@@ -191,14 +192,14 @@ export default function CadastroScreen({ navigation }) {
               label="Bairro"
               value={bairro}
               onChangeText={setBairro}
-              placeholder="Centro"
+              placeholder="Forte"
               error={erros.bairro}
             />
             <AppInput
               label="Cidade"
               value={cidade}
               onChangeText={setCidade}
-              placeholder="São Paulo SP"
+              placeholder="Praia Grande"
               error={erros.cidade}
             />
             <View style={styles.botoesRodape}>
@@ -215,7 +216,7 @@ export default function CadastroScreen({ navigation }) {
               label="Celular/WhatsApp"
               value={celular}
               onChangeText={setCelular}
-              placeholder="(11) 90000-0000"
+              placeholder="(13) 90000-0000"
               mask="celular"
               keyboardType="phone-pad"
               error={erros.celular}

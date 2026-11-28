@@ -5,6 +5,8 @@ import AppInput from '../../components/appInput/AppInput';
 import AppButton from '../../components/appButton/AppButton';
 import styles from './Style';
 
+import { loginUsuario } from '../../services/authService';
+
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -24,19 +26,16 @@ export default function LoginScreen({ navigation }) {
   }
 
   async function handleEntrar() {
-    if (!validar()) return;
+    if (!email.trim() || !senha.trim()) {
+        Alert.alert('Atenção', 'Preencha e-mail e senha.');
+        return;
+  }
 
     setCarregando(true);
     try {
-      // Payload pronto para o Prepared Statement do back-end (SELECT ... WHERE emailUsuario = $1)
-      const credenciais = {
-        emailUsuario: email.trim().toLowerCase(),
-        senhaUsuario: senha,
-      };
-      console.log('Enviando login para back-end:', credenciais);
-
-      // Navega para a área logada (Abas principais)
+      await loginUsuario(email, senha);
       navigation.replace('MainTabs');
+
     } catch (erro) {
       Alert.alert('Erro ao entrar', erro.message);
     } finally {

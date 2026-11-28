@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const API_BASE_URL = 'http://192.168.0.100:3000/api';
+export const API_BASE_URL = 'https://employ-gotta-thing-prefer.trycloudflare.com/api';
 
 export async function apiRequest(endpoint, { method = 'GET', body } = {}) {
   const token = await AsyncStorage.getItem('@prediallink:token');
